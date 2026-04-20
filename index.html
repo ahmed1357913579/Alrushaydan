@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صندوق عائلة الرشيدان</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            color: white;
+        }
+        .splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #0a0a0a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        .splash h1 { font-size: 60px; }
+        .splash h2 { color: #ffc107; }
+        .app {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .hero {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #1a1a2e, #0f0f0f);
+            margin: 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,193,7,0.2);
+        }
+        .hero-icon { font-size: 64px; margin-bottom: 10px; }
+        .hero-title { font-size: 28px; font-weight: bold; color: #ffc107; }
+        .hero-sub { font-size: 12px; opacity: 0.6; margin: 5px 0; }
+        .hero-tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .hero-tags span {
+            background: rgba(255,193,7,0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #ffc107;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 15px;
+        }
+        .icon-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,193,7,0.1);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .icon-card:hover { background: rgba(255,193,7,0.05); transform: translateY(-3px); }
+        .icon-card .icon { font-size: 35px; margin-bottom: 8px; }
+        .icon-card .title { color: #ffc107; font-size: 13px; font-weight: bold; }
+        .icon-card .info { font-size: 11px; opacity: 0.6; margin-top: 5px; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(10,10,10,0.95);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 15px;
+            border-top: 1px solid rgba(255,193,7,0.2);
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .nav-btn span:first-child { font-size: 20px; }
+        .nav-btn.active { color: #ffc107; }
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .page-header h2 { color: #ffc107; font-size: 22px; }
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .member-name { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .member-small { font-size: 11px; opacity: 0.6; }
+        .balance-green { color: #4caf50; font-weight: bold; }
+        .balance-orange { color: #ff9800; }
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 6px;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value { font-size: 24px; font-weight: bold; color: #ffc107; margin: 5px 0; }
+        .stat-label { font-size: 11px; opacity: 0.6; }
+        .btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .btn-gold { background: linear-gradient(135deg, #ffc107, #ff9800); color: #0a0a0a; }
+        .btn-dark { background: rgba(255,193,7,0.15); border: 1px solid rgba(255,193,7,0.3); color: #ffc107; }
+        .btn-red { background: rgba(255,68,68,0.2); border: 1px solid rgba(255,68,68,0.3); color: #ff4444; }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,193,7,0.3);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            margin-bottom: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a2e;
+            border: 1px solid rgba(255,193,7,0.3);
+            border-radius: 25px;
+            padding: 25px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .whatsapp-link {
+            background: #25D366;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffc107;
+            color: #0a0a0a;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 300;
+        }
+        .flex-btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .emergency-card {
+            background: linear-gradient(135deg, #ffc10720, #ff980020);
+            border: 1px solid #ffc107;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .support-log {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .support-log span { color: #ffc107; }
+        .code-input {
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 8px;
+            direction: ltr;
+        }
+        input::placeholder { color: rgba(255,255,255,0.5); }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,193,7,0.3);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<div class="splash" id="splash">
+    <div style="text-align:center">
+        <h1>🏦</h1>
+        <h2>صندوق الرشيدان</h2>
+        <p style="opacity:0.7; margin-top:10px">ALRUSHAYDAN FAMILY FUND</p>
+    </div>
+</div>
+
+<div class="app" id="app">
+
+    <!-- الصفحة الرئيسية -->
+    <div id="homePage" class="page active">
+        <div class="hero">
+            <div class="hero-icon">🏦</div>
+            <div class="hero-title">صندوق الرشيدان</div>
+            <div class="hero-sub">ALRUSHAYDAN FAMILY FUND</div>
+            <div class="hero-tags">
+                <span>🤝 التعاون</span>
+                <span>🎯 المساعدة</span>
+                <span>🌱 النماء</span>
+            </div>
+        </div>
+        
+        <!-- بند الطوارئ -->
+        <div class="card emergency-card" style="margin: 0 15px 15px 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 14px; opacity:0.8;">🆘 بند الطوارئ</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #ffc107;" id="emergencyBalance">0</div>
+                    <div style="font-size: 10px; opacity:0.6;">ريال</div>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-size: 11px;">📈 الزيادة الشهرية 15%</div>
+                    <div style="font-size: 11px;" id="emergencyMonthlyAdd">0</div>
+                </div>
+            </div>
+            <div class="flex-btns" style="margin-top: 10px;">
+                <button class="btn-small btn-gold" onclick="showEmergencySupport()">🎁 دعم</button>
+                <button class="btn-small btn-dark" onclick="showEmergencyPay()">💳 سداد</button>
+                <button class="btn-small btn-dark" onclick="showEmergencyLog()">📋 سجل الدعم</button>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="icon-card" onclick="showPage('membersPage')">
+                <div class="icon">👥</div>
+                <div class="title">الأعضاء</div>
+                <div class="info" id="homeMemberCount">0 عضو</div>
+            </div>
+            <div class="icon-card" onclick="showPage('loansPage')">
+                <div class="icon">🏦</div>
+                <div class="title">القروض</div>
+                <div class="info" id="homeLoanCount">0 قرض</div>
+            </div>
+            <div class="icon-card" onclick="showPage('subscriptionsPage')">
+                <div class="icon">📅</div>
+                <div class="title">الاشتراكات</div>
+                <div class="info">تسجيل شهري</div>
+            </div>
+            <div class="icon-card" onclick="showPage('statsPage')">
+                <div class="icon">📊</div>
+                <div class="title">الإحصائيات</div>
+                <div class="info">الميزانية</div>
+            </div>
+            <div class="icon-card" onclick="checkAdminAccess()">
+                <div class="icon">⚙️</div>
+                <div class="title">الإدارة</div>
+                <div class="info">محمية برمز</div>
+            </div>
+            <div class="icon-card" onclick="exportToPDF()">
+                <div class="icon">📄</div>
+                <div class="title">تقرير PDF</div>
+                <div class="info">تصدير</div>
+            </div>
+            <div class="icon-card" onclick="exportToExcel()">
+                <div class="icon">📊</div>
+                <div class="title">تقرير Excel</div>
+                <div class="info">تصدير</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة الأعضاء -->
+    <div id="membersPage" class="page">
+        <div class="page-header">
+            <h2>👥 الأعضاء</h2>
+        </div>
+        <input type="text" id="searchMember" placeholder="🔍 بحث باسم العضو...">
+        <div id="membersList"></div>
+    </div>
+
+    <!-- صفحة القروض -->
+    <div id="loansPage" class="page">
+        <div class="page-header">
+            <h2>🏦 القروض النشطة</h2>
+        </div>
+        <div id="loansList"></div>
+    </div>
+
+    <!-- صفحة الاشتراكات الشهرية -->
+    <div id="subscriptionsPage" class="page">
+        <div class="page-header">
+            <h2>📅 الاشتراكات الشهرية</h2>
+        </div>
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">تسجيل اشتراكات الشهر</h3>
+            <select id="subMemberSelect"></select>
+            <input type="number" id="subAmount" placeholder="مبلغ الاشتراك (الافتراضي 200)">
+            <button class="btn btn-gold" onclick="recordMemberSubscription()">تسجيل اشتراك للعضو</button>
+            <button class="btn btn-dark" onclick="recordAllSubscriptions()">تسجيل لجميع الأعضاء (200 لكل عضو)</button>
+            <button class="btn btn-dark" onclick="calculateMonthlyEmergency()">📈 حساب زيادة الطوارئ الشهرية</button>
+        </div>
+        <div id="subscriptionsHistory"></div>
+    </div>
+
+    <!-- صفحة الإحصائيات -->
+    <div id="statsPage" class="page">
+        <div class="page-header">
+            <h2>📊 الإحصائيات</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">إجمالي الرصيد</div>
+                <div class="stat-value" id="totalBalance">0</div>
+                <div class="stat-label">ريال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">المتاح للإقراض</div>
+                <div class="stat-value" id="availableAmount">0</div>
+                <div class="stat-label">ريال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">إجمالي القروض</div>
+                <div class="stat-value" id="totalLoansAmount">0</div>
+                <div class="stat-label">ريال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">عدد الأعضاء</div>
+                <div class="stat-value" id="memberCount">0</div>
+                <div class="stat-label">عضو</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">بند الطوارئ</div>
+                <div class="stat-value" id="statsEmergency">0</div>
+                <div class="stat-label">ريال</div>
+            </div>
+        </div>
+        <button class="btn btn-dark" onclick="refreshAll()">🔄 تحديث البيانات</button>
+    </div>
+
+    <!-- صفحة الإدارة (محمية) -->
+    <div id="adminPage" class="page">
+        <div class="page-header">
+            <h2>⚙️ لوحة الإدارة</h2>
+        </div>
+        
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">💰 تسديد قسط</h3>
+            <select id="paymentMember"></select>
+            <input type="number" id="paymentAmount" placeholder="المبلغ المدفوع">
+            <button class="btn btn-gold" onclick="recordPayment()">تسجيل السداد</button>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">➕ إضافة عضو</h3>
+            <input type="text" id="newMemberName" placeholder="الاسم الكامل">
+            <input type="tel" id="newMemberPhone" placeholder="رقم الجوال">
+            <button class="btn btn-gold" onclick="addMember()">إضافة عضو</button>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">🏦 إضافة قرض</h3>
+            <select id="loanMember"></select>
+            <input type="number" id="loanAmount" placeholder="مبلغ القرض">
+            <input type="number" id="loanInstallment" placeholder="القسط الشهري">
+            <button class="btn btn-gold" onclick="addLoan()">إضافة قرض</button>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">📞 أرقام المسؤولين</h3>
+            <input type="tel" id="phone1" placeholder="رقم المسؤول 1">
+            <input type="tel" id="phone2" placeholder="رقم المسؤول 2">
+            <input type="tel" id="phone3" placeholder="رقم المسؤول 3">
+            <button class="btn btn-gold" onclick="savePhones()">حفظ الأرقام</button>
+        </div>
+
+        <div class="card">
+            <h3 style="color:#ffc107; margin-bottom:10px;">🗑️ حذف البيانات</h3>
+            <button class="btn btn-red" onclick="resetAll()">إعادة تعيين جميع البيانات</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn" onclick="showPage('homePage')"><span>🏠</span><span>الرئيسية</span></button>
+        <button class="nav-btn" onclick="showPage('membersPage')"><span>👥</span><span>الأعضاء</span></button>
+        <button class="nav-btn" onclick="showPage('loansPage')"><span>🏦</span><span>القروض</span></button>
+        <button class="nav-btn" onclick="showPage('subscriptionsPage')"><span>📅</span><span>الاشتراكات</span></button>
+        <button class="nav-btn" onclick="showPage('statsPage')"><span>📊</span><span>الإحصائيات</span></button>
+        <button class="nav-btn" onclick="checkAdminAccess()"><span>⚙️</span><span>الإدارة</span></button>
+    </div>
+</div>
+
+<!-- نافذة إدخال الرمز السري -->
+<div id="codeModal" class="modal">
+    <div class="modal-content">
+        <h3>🔐 رمز الدخول للإدارة</h3>
+        <p style="margin: 10px 0; font-size: 14px; opacity:0.7;">الرجاء إدخال الرمز السري</p>
+        <input type="password" id="secretCode" class="code-input" placeholder="•••••" maxlength="5" style="text-align:center; font-size:24px; letter-spacing:5px;">
+        <button class="btn btn-gold" onclick="verifyAdminCode()">🔓 تأكيد</button>
+        <button class="btn btn-dark" onclick="closeModal()">إلغاء</button>
+        <p style="margin-top: 15px; font-size: 11px; opacity:0.5;">الرمز متوفر لدى المسؤول فقط</p>
+    </div>
+</div>
+
+<!-- نافذة تعديل العضو -->
+<div id="editMemberModal" class="modal">
+    <div class="modal-content">
+        <h3>✏️ تعديل بيانات العضو</h3>
+        <input type="hidden" id="editMemberId">
+        <div class="form-group">
+            <label>الاسم:</label>
+            <input type="text" id="editMemberName">
+        </div>
+        <div class="form-group">
+            <label>رقم الجوال:</label>
+            <input type="tel" id="editMemberPhone">
+        </div>
+        <button class="btn btn-gold" onclick="saveMemberEdit()">💾 حفظ التعديلات</button>
+        <button class="btn btn-dark" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<!-- نافذة تعديل القرض -->
+<div id="editLoanModal" class="modal">
+    <div class="modal-content">
+        <h3>✏️ تعديل بيانات القرض</h3>
+        <input type="hidden" id="editLoanId">
+        <div class="form-group">
+            <label>مبلغ القرض:</label>
+            <input type="number" id="editLoanAmount">
+        </div>
+        <div class="form-group">
+            <label>القسط الشهري:</label>
+            <input type="number" id="editLoanPayment">
+        </div>
+        <div class="form-group">
+            <label>المتبقي:</label>
+            <input type="number" id="editLoanRemaining">
+        </div>
+        <button class="btn btn-gold" onclick="saveLoanEdit()">💾 حفظ التعديلات</button>
+        <button class="btn btn-dark" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<!-- نافذة دعم من بند الطوارئ -->
+<div id="emergencySupportModal" class="modal">
+    <div class="modal-content">
+        <h3>🎁 دعم من بند الطوارئ</h3>
+        <div class="form-group">
+            <label>اختر العضو المستحق للدعم:</label>
+            <select id="supportMember"></select>
+        </div>
+        <div class="form-group">
+            <label>مبلغ الدعم:</label>
+            <input type="number" id="supportAmount" placeholder="المبلغ">
+        </div>
+        <div class="form-group">
+            <label>نوع الدعم:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="supportType" value="refundable" checked> 🔄 دعم مسترد</label>
+                <label><input type="radio" name="supportType" value="nonRefundable"> ❌ دعم غير مسترد</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>سبب الدعم:</label>
+            <input type="text" id="supportReason" placeholder="مثال: زواج، علاج، سكن، تعليم...">
+        </div>
+        <button class="btn btn-gold" onclick="confirmSupport()">تأكيد الدعم</button>
+        <button class="btn btn-dark" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<!-- نافذة سداد لبند الطوارئ -->
+<div id="emergencyPayModal" class="modal">
+    <div class="modal-content">
+        <h3>💳 إضافة مبلغ لبند الطوارئ</h3>
+        <div class="form-group">
+            <label>المبلغ المضاف:</label>
+            <input type="number" id="emergencyAddAmount" placeholder="المبلغ">
+        </div>
+        <button class="btn btn-gold" onclick="confirmEmergencyAdd()">تأكيد الإضافة</button>
+        <button class="btn btn-dark" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<!-- نافذة طلب قرض واتساب -->
+<div id="loanModal" class="modal">
+    <div class="modal-content">
+        <h3>📱 طلب قرض</h3>
+        <p style="margin:10px 0">اختر أحد المسؤولين للتواصل</p>
+        <div id="whatsappLinks"></div>
+        <button class="btn btn-dark" onclick="closeModal()">إغلاق</button>
+    </div>
+</div>
+
+<!-- نافذة سجل الدعم -->
+<div id="emergencyLogModal" class="modal">
+    <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+        <h3>📋 سجل دعم بند الطوارئ</h3>
+        <div id="emergencyLogList"></div>
+        <button class="btn btn-dark" onclick="closeModal()">إغلاق</button>
+    </div>
+</div>
+
+<script>
+    // ========== الرمز السري ==========
+    const SECRET_CODE = '13579';
+    
+    // ========== البيانات ==========
+    let members = [];
+    let loans = [];
+    let emergencyBalance = 0;
+    let emergencyLog = [];
+    let adminPhones = { phone1: '966501234567', phone2: '966501234568', phone3: '966501234569' };
+    let lastMonthTotal = 0;
+    
+    // ========== التحقق من الوصول للإدارة ==========
+    function checkAdminAccess() {
+        document.getElementById('codeModal').style.display = 'flex';
+        document.getElementById('secretCode').value = '';
+        document.getElementById('secretCode').focus();
+    }
+    
+    function verifyAdminCode() {
+        let enteredCode = document.getElementById('secretCode').value;
+        if (enteredCode === SECRET_CODE) {
+            document.getElementById('codeModal').style.display = 'none';
+            showPage('adminPage');
+            showMessage('✅ مرحباً بك في لوحة الإدارة');
+        } else {
+            showMessage('❌ الرمز السري غير صحيح!');
+            document.getElementById('secretCode').value = '';
+            document.getElementById('secretCode').focus();
+        }
+    }
+    
+    // ========== تحميل البيانات ==========
+    function loadData() {
+        let savedMembers = localStorage.getItem('family_members');
+        let savedLoans = localStorage.getItem('family_loans');
+        let savedEmergency = localStorage.getItem('family_emergency');
+        let savedEmergencyLog = localStorage.getItem('family_emergency_log');
+        let savedPhones = localStorage.getItem('family_phones');
+        let savedLastMonth = localStorage.getItem('family_last_month');
+        
+        if (savedMembers) {
+            members = JSON.parse(savedMembers);
+        } else {
+            members = [
+                {id:1, name:'محمد عبد المصلح الرشيدان', phone:'966501234567', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:2, name:'أحمد عبد المصلح الرشيدان', phone:'966501234568', joinDate:'2023-04-01', totalPaid:8400, monthlySub:200},
+                {id:3, name:'حمود عبد المصلح الرشيدان', phone:'966501234569', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:4, name:'عبد الله عبد المصلح الرشيدان', phone:'966501234570', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:5, name:'ماجد خليل الرشيدان', phone:'966501234571', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:6, name:'أمجد خليل الرشيدان', phone:'966501234572', joinDate:'2025-02-01', totalPaid:2600, monthlySub:200},
+                {id:7, name:'أحمد خليل الرشيدان', phone:'966501234573', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:8, name:'أيمن خليل الرشيدان', phone:'966501234574', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:9, name:'خالد محمد الرشيدان', phone:'966501234575', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:10, name:'سامي خالد الرشيدان', phone:'966501234576', joinDate:'2025-10-01', totalPaid:800, monthlySub:200},
+                {id:11, name:'عبد الله حمدان الرشيدان', phone:'966501234577', joinDate:'2022-08-01', totalPaid:8400, monthlySub:200},
+                {id:12, name:'محمد عبد الله الرشيدان', phone:'966501234578', joinDate:'2022-09-01', totalPaid:8400, monthlySub:200},
+                {id:13, name:'فيصل حمود الرشيدان', phone:'966501234579', joinDate:'2024-09-01', totalPaid:3600, monthlySub:200},
+                {id:14, name:'عمر عبد الله الرشيدان', phone:'966501234580', joinDate:'2024-09-01', totalPaid:3600, monthlySub:200},
+                {id:15, name:'محمد خالد محمد الرشيدان', phone:'966501234581', joinDate:'2024-09-01', totalPaid:3600, monthlySub:200},
+                {id:16, name:'نايف أيمن الرشيدان', phone:'966501234582', joinDate:'2024-09-01', totalPaid:3600, monthlySub:200}
+            ];
+        }
+        
+        if (savedLoans) {
+            loans = JSON.parse(savedLoans);
+        } else {
+            loans = [
+                {id:1, memberId:3, memberName:'حمود عبد المصلح', amount:3000, monthlyPayment:200, remaining:2800, startDate:'2024-03-01', nextDueDate:'2026-04-01'},
+                {id:2, memberId:5, memberName:'ماجد خليل', amount:12400, monthlyPayment:400, remaining:12000, startDate:'2025-09-01', nextDueDate:'2026-04-01'},
+                {id:3, memberId:7, memberName:'أحمد خليل', amount:5800, monthlyPayment:200, remaining:5600, startDate:'2024-07-01', nextDueDate:'2026-04-01'},
+                {id:4, memberId:9, memberName:'خالد محمد', amount:13900, monthlyPayment:400, remaining:13500, startDate:'2025-11-01', nextDueDate:'2026-04-01'},
+                {id:5, memberId:11, memberName:'عبد الله حمدان', amount:14200, monthlyPayment:250, remaining:13950, startDate:'2025-11-01', nextDueDate:'2026-04-01'},
+                {id:6, memberId:12, memberName:'محمد عبد الله', amount:1800, monthlyPayment:200, remaining:1600, startDate:'2024-01-01', nextDueDate:'2026-04-01'},
+                {id:7, memberId:13, memberName:'فيصل حمود', amount:5000, monthlyPayment:200, remaining:4800, startDate:'2025-11-01', nextDueDate:'2026-04-01'},
+                {id:8, memberId:15, memberName:'محمد خالد', amount:3600, monthlyPayment:200, remaining:3400, startDate:'2025-08-01', nextDueDate:'2026-04-01'},
+                {id:9, memberId:16, memberName:'نايف أيمن', amount:6000, monthlyPayment:200, remaining:5800, startDate:'2026-01-01', nextDueDate:'2026-04-01'}
+            ];
+        }
+        
+        if (savedEmergency) {
+            emergencyBalance = parseFloat(savedEmergency);
+        } else {
+            emergencyBalance = 9988;
+        }
+        
+        if (savedEmergencyLog) {
+            emergencyLog = JSON.parse(savedEmergencyLog);
+        } else {
+            emergencyLog = [];
+        }
+        
+        if (savedPhones) {
+            adminPhones = JSON.parse(savedPhones);
+        }
+        
+        if (savedLastMonth) {
+            lastMonthTotal = parseFloat(savedLastMonth);
+        }
+        
+        saveAllData();
+        updateEmergencyDisplay();
+    }
+    
+    function saveAllData() {
+        localStorage.setItem('family_members', JSON.stringify(members));
+        localStorage.setItem('family_loans', JSON.stringify(loans));
+        localStorage.setItem('family_emergency', emergencyBalance);
+        localStorage.setItem('family_emergency_log', JSON.stringify(emergencyLog));
+        localStorage.setItem('family_phones', JSON.stringify(adminPhones));
+        localStorage.setItem('family_last_month', lastMonthTotal);
+    }
+    
+    function showMessage(msg) {
+        let toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+    
+    function updateEmergencyDisplay() {
+        document.getElementById('emergencyBalance').innerHTML = emergencyBalance.toLocaleString();
+        document.getElementById('statsEmergency').innerHTML = emergencyBalance.toLocaleString();
+    }
+    
+    function calculateMonthlyEmergency() {
+        let totalSubscriptions = members.reduce((sum, m) => sum + m.totalPaid, 0);
+        let totalPaidLoans = loans.reduce((sum, l) => sum + (l.amount - l.remaining), 0);
+        let currentTotal = totalSubscriptions + totalPaidLoans;
+        
+        let increase = (currentTotal - lastMonthTotal) * 0.15;
+        if (increase > 0) {
+            emergencyBalance += increase;
+            showMessage(`📈 تم إضافة ${Math.round(increase).toLocaleString()} ريال (15% من الفرق الشهري) لبند الطوارئ`);
+        }
+        lastMonthTotal = currentTotal;
+        saveAllData();
+        updateEmergencyDisplay();
+        refreshAll();
+    }
+    
+    function addEmergencyFromPayment(amount) {
+        let increase = amount * 0.15;
+        emergencyBalance += increase;
+        saveAllData();
+        updateEmergencyDisplay();
+    }
+    
+    function addEmergencyFromSubscription(amount) {
+        let increase = amount * 0.15;
+        emergencyBalance += increase;
+        saveAllData();
+        updateEmergencyDisplay();
+    }
+    
+    function showEmergencySupport() {
+        let select = document.getElementById('supportMember');
+        select.innerHTML = '<option value="">اختر العضو</option>';
+        members.forEach(m => {
+            select.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+        });
+        document.getElementById('supportAmount').value = '';
+        document.getElementById('supportReason').value = '';
+        document.querySelector('input[name="supportType"][value="refundable"]').checked = true;
+        document.getElementById('emergencySupportModal').style.display = 'flex';
+    }
+    
+    function confirmSupport() {
+        let memberId = document.getElementById('supportMember').value;
+        let amount = parseFloat(document.getElementById('supportAmount').value);
+        let reason = document.getElementById('supportReason').value;
+        let supportType = document.querySelector('input[name="supportType"]:checked').value;
+        
+        if (!memberId) { showMessage('❌ اختر العضو'); return; }
+        if (!amount || amount <= 0) { showMessage('❌ أدخل مبلغ صحيح'); return; }
+        if (amount > emergencyBalance) { showMessage('❌ المبلغ المطلوب أكبر من رصيد بند الطوارئ'); return; }
+        
+        let member = members.find(m => m.id == memberId);
+        
+        emergencyBalance -= amount;
+        
+        emergencyLog.unshift({
+            date: new Date().toLocaleDateString('ar-SA'),
+            memberName: member.name,
+            amount: amount,
+            type: supportType === 'refundable' ? '🔄 دعم مسترد' : '❌ دعم غير مسترد',
+            reason: reason || 'بدون سبب'
+        });
+        
+        saveAllData();
+        updateEmergencyDisplay();
+        refreshAll();
+        closeModal();
+        showMessage(`✅ تم صرف ${amount.toLocaleString()} ريال دعم للعضو ${member.name} من بند الطوارئ`);
+    }
+    
+    function showEmergencyPay() {
+        document.getElementById('emergencyAddAmount').value = '';
+        document.getElementById('emergencyPayModal').style.display = 'flex';
+    }
+    
+    function confirmEmergencyAdd() {
+        let amount = parseFloat(document.getElementById('emergencyAddAmount').value);
+        if (!amount || amount <= 0) { showMessage('❌ أدخل مبلغ صحيح'); return; }
+        
+        emergencyBalance += amount;
+        saveAllData();
+        updateEmergencyDisplay();
+        refreshAll();
+        closeModal();
+        showMessage(`✅ تم إضافة ${amount.toLocaleString()} ريال لبند الطوارئ`);
+    }
+    
+    function showEmergencyLog() {
+        let container = document.getElementById('emergencyLogList');
+        if (emergencyLog.length === 0) {
+            container.innerHTML = '<p style="text-align:center; opacity:0.6;">لا توجد سجلات دعم</p>';
+        } else {
+            container.innerHTML = emergencyLog.map(log => `
+                <div class="support-log">
+                    <div><span>📅 ${log.date}</span> | <span>${log.type}</span></div>
+                    <div>👤 ${log.memberName}</div>
+                    <div>💰 ${log.amount.toLocaleString()} ريال</div>
+                    <div>📝 ${log.reason}</div>
+                </div>
+            `).join('');
+        }
+        document.getElementById('emergencyLogModal').style.display = 'flex';
+    }
+    
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        if (pageId === 'membersPage') displayMembers();
+        if (pageId === 'loansPage') displayLoans();
+        if (pageId === 'subscriptionsPage') {
+            fillSubSelects();
+            displaySubscriptionsHistory();
+        }
+        if (pageId === 'statsPage') updateStats();
+        if (pageId === 'adminPage') updateAdminSelects();
+        
+        updateHomeCounts();
+    }
+    
+    function updateHomeCounts() {
+        document.getElementById('homeMemberCount').innerHTML = members.length + ' عضو';
+        let activeLoans = loans.filter(l => l.remaining > 0).length;
+        document.getElementById('homeLoanCount').innerHTML = activeLoans + ' قرض';
+    }
+    
+    function displayMembers() {
+        let search = document.getElementById('searchMember')?.value.toLowerCase() || '';
+        let filtered = members.filter(m => m.name.toLowerCase().includes(search));
+        
+        let html = '';
+        filtered.forEach(m => {
+            let debt = loans.filter(l => l.memberId === m.id).reduce((s,l) => s + l.remaining, 0);
+            let withdrawal = m.totalPaid - debt;
+            html += `
+                <div class="card">
+                    <div class="member-row">
+                        <div>
+                            <div class="member-name">${m.name}</div>
+                            <div class="member-small">📅 ${m.joinDate} | 📞 ${m.phone}</div>
+                        </div>
+                        <div style="text-align:left">
+                            <div class="balance-green">💰 ${m.totalPaid.toLocaleString()}</div>
+                            <div class="balance-orange">🏦 ${debt.toLocaleString()}</div>
+                            <div style="font-size:11px">💵 ${withdrawal.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="flex-btns">
+                        <button class="btn-small btn-gold" onclick="openEditMember(${m.id})">✏️ تعديل</button>
+                        <button class="btn-small btn-dark" onclick="openLoanRequest('${m.name}', '${m.phone}')">📱 طلب قرض</button>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('membersList').innerHTML = html || '<p style="text-align:center">لا توجد نتائج</p>';
+    }
+    
+    function displayLoans() {
+        let active = loans.filter(l => l.remaining > 0);
+        if (active.length === 0) {
+            document.getElementById('loansList').innerHTML = '<p style="text-align:center">لا توجد قروض نشطة</p>';
+            return;
+        }
+        let html = '';
+        active.forEach(l => {
+            let progress = ((l.amount - l.remaining) / l.amount) * 100;
+            html += `
+                <div class="card">
+                    <div class="member-name" style="color:#ffc107">${l.memberName}</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin:5px 0">
+                        <span>💰 ${l.amount.toLocaleString()}</span>
+                        <span>📅 ${l.monthlyPayment}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px">
+                        <span style="color:#ff9800">⚡ ${l.remaining.toLocaleString()}</span>
+                        <span>📆 ${l.nextDueDate}</span>
+                    </div>
+                    <button class="btn-small btn-gold" style="margin-top:10px" onclick="openEditLoan(${l.id})">✏️ تعديل القرض</button>
+                </div>
+            `;
+        });
+        document.getElementById('loansList').innerHTML = html;
+    }
+    
+    function updateStats() {
+        let totalPaid = members.reduce((s,m) => s + m.totalPaid, 0);
+        let totalRemain = loans.reduce((s,l) => s + l.remaining, 0);
+        let available = totalPaid - totalRemain - emergencyBalance;
+        document.getElementById('totalBalance').innerHTML = totalPaid.toLocaleString();
+        document.getElementById('availableAmount').innerHTML = available.toLocaleString();
+        document.getElementById('totalLoansAmount').innerHTML = totalRemain.toLocaleString();
+        document.getElementById('memberCount').innerHTML = members.length;
+    }
+    
+    function updateAdminSelects() {
+        let options = '<option value="">اختر العضو</option>';
+        members.forEach(m => { options += `<option value="${m.id}">${m.name}</option>`; });
+        document.getElementById('paymentMember').innerHTML = options;
+        document.getElementById('loanMember').innerHTML = options;
+        document.getElementById('phone1').value = adminPhones.phone1;
+        document.getElementById('phone2').value = adminPhones.phone2;
+        document.getElementById('phone3').value = adminPhones.phone3;
+    }
+    
+    function fillSubSelects() {
+        let options = '<option value="">اختر العضو</option>';
+        members.forEach(m => { options += `<option value="${m.id}">${m.name}</option>`; });
+        document.getElementById('subMemberSelect').innerHTML = options;
+    }
+    
+    function displaySubscriptionsHistory() {}
+    
+    function recordMemberSubscription() {
+        let memberId = document.getElementById('subMemberSelect').value;
+        let amount = document.getElementById('subAmount').value;
+        if (!memberId) { showMessage('❌ اختر العضو'); return; }
+        let subAmount = amount ? parseFloat(amount) : 200;
+        let member = members.find(m => m.id == memberId);
+        member.totalPaid += subAmount;
+        addEmergencyFromSubscription(subAmount);
+        saveAllData();
+        refreshAll();
+        showMessage(`✅ تم تسجيل اشتراك ${subAmount} ريال للعضو ${member.name}`);
+        document.getElementById('subAmount').value = '';
+    }
+    
+    function recordAllSubscriptions() {
+        members.forEach(m => {
+            m.totalPaid += 200;
+            addEmergencyFromSubscription(200);
+        });
+        saveAllData();
+        refreshAll();
+        showMessage('✅ تم تسجيل اشتراكات 200 ريال لجميع الأعضاء');
+    }
+    
+    function recordPayment() {
+        let memberId = document.getElementById('paymentMember').value;
+        let amount = document.getElementById('paymentAmount').value;
+        if (!memberId) { showMessage('❌ اختر العضو'); return; }
+        if (!amount || amount <= 0) { showMessage('❌ أدخل المبلغ'); return; }
+        let loan = loans.find(l => l.memberId == memberId && l.remaining > 0);
+        if (!loan) { showMessage('❌ لا يوجد قرض نشط'); return; }
+        loan.remaining = Math.max(0, loan.remaining - parseFloat(amount));
+        addEmergencyFromPayment(parseFloat(amount));
+        saveAllData();
+        displayLoans();
+        updateStats();
+        document.getElementById('paymentAmount').value = '';
+        showMessage('✅ تم تسديد ' + amount + ' ريال');
+    }
+    
+    function addMember() {
+        let name = document.getElementById('newMemberName').value;
+        let phone = document.getElementById('newMemberPhone').value;
+        if (!name || !phone) { showMessage('❌ أدخل الاسم والجوال'); return; }
+        let newId = Math.max(...members.map(m => m.id), 0) + 1;
+        let today = new Date().toISOString().split('T')[0];
+        members.push({id:newId, name:name, phone:phone, joinDate:today, totalPaid:0, monthlySub:200});
+        saveAllData();
+        refreshAll();
+        showMessage('✅ تم إضافة ' + name);
+        document.getElementById('newMemberName').value = '';
+        document.getElementById('newMemberPhone').value = '';
+    }
+    
+    function addLoan() {
+        let memberId = document.getElementById('loanMember').value;
+        let amount = document.getElementById('loanAmount').value;
+        let installment = document.getElementById('loanInstallment').value;
+        if (!memberId || !amount || !installment) { showMessage('❌ املأ جميع الحقول'); return; }
+        let member = members.find(m => m.id == memberId);
+        let newId = Math.max(...loans.map(l => l.id), 0) + 1;
+        let nextDate = new Date();
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        loans.push({
+            id: newId,
+            memberId: parseInt(memberId),
+            memberName: member.name,
+            amount: parseFloat(amount),
+            monthlyPayment: parseFloat(installment),
+            remaining: parseFloat(amount),
+            startDate: new Date().toISOString().split('T')[0],
+            nextDueDate: nextDate.toISOString().split('T')[0]
+        });
+        saveAllData();
+        displayLoans();
+        updateStats();
+        showMessage('✅ تم إضافة قرض بقيمة ' + amount);
+        document.getElementById('loanAmount').value = '';
+        document.getElementById('loanInstallment').value = '';
+    }
+    
+    function openEditMember(id) {
+        let member = members.find(m => m.id == id);
+        document.getElementById('editMemberId').value = id;
+        document.getElementById('editMemberName').value = member.name;
+        document.getElementById('editMemberPhone').value = member.phone;
+        document.getElementById('editMemberModal').style.display = 'flex';
+    }
+    
+    function saveMemberEdit() {
+        let id = parseInt(document.getElementById('editMemberId').value);
+        let name = document.getElementById('editMemberName').value;
+        let phone = document.getElementById('editMemberPhone').value;
+        let member = members.find(m => m.id == id);
+        if (member) {
+            member.name = name;
+            member.phone = phone;
+            saveAllData();
+            displayMembers();
+            showMessage('✅ تم تعديل بيانات العضو');
+            closeModal();
+        }
+    }
+    
+    function openEditLoan(id) {
+        let loan = loans.find(l => l.id == id);
+        document.getElementById('editLoanId').value = id;
+        document.getElementById('editLoanAmount').value = loan.amount;
+        document.getElementById('editLoanPayment').value = loan.monthlyPayment;
+        document.getElementById('editLoanRemaining').value = loan.remaining;
+        document.getElementById('editLoanModal').style.display = 'flex';
+    }
+    
+    function saveLoanEdit() {
+        let id = parseInt(document.getElementById('editLoanId').value);
+        let amount = parseFloat(document.getElementById('editLoanAmount').value);
+        let payment = parseFloat(document.getElementById('editLoanPayment').value);
+        let remaining = parseFloat(document.getElementById('editLoanRemaining').value);
+        let loan = loans.find(l => l.id == id);
+        if (loan) {
+            loan.amount = amount;
+            loan.monthlyPayment = payment;
+            loan.remaining = remaining;
+            saveAllData();
+            displayLoans();
+            updateStats();
+            showMessage('✅ تم تعديل بيانات القرض');
+            closeModal();
+        }
+    }
+    
+    function savePhones() {
+        adminPhones = {
+            phone1: document.getElementById('phone1').value,
+            phone2: document.getElementById('phone2').value,
+            phone3: document.getElementById('phone3').value
+        };
+        saveAllData();
+        showMessage('✅ تم حفظ الأرقام');
+    }
+    
+    function openLoanRequest(name, phone) {
+        let msg = `السلام عليكم، أنا ${name} أود طلب قرض. رقمي: ${phone}`;
+        let links = document.getElementById('whatsappLinks');
+        links.innerHTML = `
+            <a href="https://wa.me/${adminPhones.phone1}?text=${encodeURIComponent(msg)}" target="_blank" class="whatsapp-link">📱 المسؤول الأول - ${adminPhones.phone1}</a>
+            <a href="https://wa.me/${adminPhones.phone2}?text=${encodeURIComponent(msg)}" target="_blank" class="whatsapp-link">📱 المسؤول الثاني - ${adminPhones.phone2}</a>
+            <a href="https://wa.me/${adminPhones.phone3}?text=${encodeURIComponent(msg)}" target="_blank" class="whatsapp-link">📱 المسؤول الثالث - ${adminPhones.phone3}</a>
+        `;
+        document.getElementById('loanModal').style.display = 'flex';
+    }
+    
+    function resetAll() {
+        if (confirm('⚠️ تحذير: هذا سيمسح جميع التعديلات. هل أنت متأكد؟')) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+    
+    function refreshAll() {
+        displayMembers();
+        displayLoans();
+        updateStats();
+        updateHomeCounts();
+        updateEmergencyDisplay();
+        showMessage('✅ تم تحديث البيانات');
+    }
+    
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    }
+    
+    function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        let doc = new jsPDF({ orientation: 'landscape' });
+        doc.setFont('helvetica');
+        doc.text('صندوق عائلة الرشيدان - تقرير شامل', 14, 15);
+        doc.text(`التاريخ: ${new Date().toLocaleDateString('ar-SA')}`, 14, 25);
+        
+        let memberData = members.map(m => [m.name, m.phone, m.totalPaid, loans.filter(l=>l.memberId===m.id).reduce((s,l)=>s+l.remaining,0)]);
+        doc.autoTable({
+            head: [['اسم العضو', 'الجوال', 'إجمالي المدفوع', 'المتبقي من القروض']],
+            body: memberData,
+            startY: 35,
+            theme: 'dark',
+            styles: { fontSize: 8, halign: 'right' },
+            headStyles: { fillColor: [255, 193, 7], textColor: [0,0,0] }
+        });
+        
+        let finalY = doc.lastAutoTable.finalY + 10;
+        doc.text(`بند الطوارئ: ${emergencyBalance.toLocaleString()} ريال`, 14, finalY);
+        doc.save(`تقرير_صندوق_الرشيدان_${new Date().toLocaleDateString()}.pdf`);
+        showMessage('✅ تم تصدير تقرير PDF');
+    }
+    
+    function exportToExcel() {
+        let memberSheet = members.map(m => ({
+            'اسم العضو': m.name,
+            'رقم الجوال': m.phone,
+            'تاريخ الاشتراك': m.joinDate,
+            'إجمالي المدفوع': m.totalPaid,
+            'المتبقي من القروض': loans.filter(l=>l.memberId===m.id).reduce((s,l)=>s+l.remaining,0)
+        }));
+        
+        let loanSheet = loans.filter(l=>l.remaining>0).map(l => ({
+            'اسم العضو': l.memberName,
+            'مبلغ القرض': l.amount,
+            'القسط الشهري': l.monthlyPayment,
+            'المتبقي': l.remaining,
+            'تاريخ الاستحقاق': l.nextDueDate
+        }));
+        
+        let wb = XLSX.utils.book_new();
+        let ws1 = XLSX.utils.json_to_sheet(memberSheet);
+        let ws2 = XLSX.utils.json_to_sheet(loanSheet);
+        XLSX.utils.book_append_sheet(wb, ws1, 'الأعضاء');
+        XLSX.utils.book_append_sheet(wb, ws2, 'القروض');
+        XLSX.writeFile(wb, `تقرير_صندوق_الرشيدان_${new Date().toLocaleDateString()}.xlsx`);
+        showMessage('✅ تم تصدير تقرير Excel');
+    }
+    
+    document.getElementById('searchMember')?.addEventListener('input', displayMembers);
+    
+    loadData();
+    
+    setTimeout(() => {
+        let splash = document.getElementById('splash');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            displayMembers();
+            displayLoans();
+            updateStats();
+            updateHomeCounts();
+            updateEmergencyDisplay();
+            updateAdminSelects();
+            fillSubSelects();
+        }, 500);
+    }, 1500);
+    
+    window.onclick = function(e) {
+        if (e.target.classList.contains('modal')) closeModal();
+    }
+</script>
+</body>
+</html>
